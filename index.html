@@ -1,0 +1,193 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css">
+    <link rel="stylesheet" href="scrubber.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="//www.desmos.com/api/v0.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    <!-- Load jQuery from Desmos instead of pulling in another copy -->
+    <script>window.jQuery = window.$ = Desmos.$</script>
+    <script src="//cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.js"></script>
+    <script src="scrubber.js"></script>
+    <script src="index.js"></script>
+    <title>Logstic Population Growth</title>
+  </head>
+  <body>
+
+    <div class="wrapper">
+      <!-- Outer grid layout -->
+      <div class="ui two column stackable grid container">
+
+        <!-- Calculator column -->
+        <div class="column">
+          <div id="calculator" class="calculator"></div>
+        </div>
+        <!-- End calculator column -->
+
+        <!-- Parameters column -->
+        <div class="column">
+          <h1>Parameters</h1>
+          <i id="settings" class="icon setting"></i>
+          <table class="ui table">
+            <tr>
+              <td class="mq-label"><span id="n-label">N_0 = </span></td>
+              <td class="input-cell">
+                <div class="ui input">
+                  <input type="text" id="n-input"></td>
+                </div>
+              <td id="n-slider"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="mq-label"><span id="r-label">r = </span></td>
+              <td class="input-cell">
+                <div class="ui input">
+                  <input type="text" id="r-input">
+                </div>
+              </td>
+              <td id="r-slider"></td>
+              <td><button id="calculate-r" class="ui button">Calculate</button></td>
+
+            </tr>
+            <tr>
+              <td class="mq-label"><span id="k-label">k = </span></td>
+              <td class="input-cell">
+                <div class="ui input">
+                  <input type="text" id="k-input">
+                </div>
+              </td>
+              <td id="k-slider"></td>
+              <td><button class="ui button" id="show-capacity">Show</button></td>
+            </tr>
+            <tr>
+              <td class="mq-label"><span id="t-label">t = </span></td>
+              <td class="input-cell">
+                <div class="ui input">
+                  <input type="text" id="t-input">
+                </div>
+              </td>
+              <td id="t-slider"></td>
+              <td><button class="ui button" id="animation"><i></i>Play</button></td>
+            </tr>
+          </table>
+
+          <!--  Inner grid -->
+          <div class="ui two column grid">
+            <div class="column">
+              <table class="ui table">
+                <tr>
+                  <td colspan="2" class="t-cell">Population <span id="nt-label">N(t) = </span><span id="nt-value"></span></td>
+                </tr>
+                <tr>
+                  <td class="t-cell">slope = <span id="slope-value"></span></td>
+                  <td><button class="ui button" id="show-slope">Show</button></td>
+                </tr>
+              </table>
+            </div>
+            <div class="column">
+              <canvas id="population-sketch" class="sketch" width=260 height=190></canvas>
+            </div>
+          </div>
+          <!--  End inner grid -->
+        </div>
+        <!-- End parameters column -->
+      </div>
+      <!-- End outer grid layout -->
+
+      <!-- Popup form for calculating r -->
+      <div id="r-calculation" class="ui popup">
+        <div class="ui labeled input popup-input">
+          <div class="ui label popup-label">Births</div>
+          <input type="text" id="births" class="r-input">
+        </div>
+        <br/>
+        <div class="ui labeled input popup-input">
+          <div class="ui label popup-label">Deaths</div>
+          <input type="text" id="deaths" class="r-input">
+        </div>
+        <br/>
+        <div class="ui labeled input popup-input">
+          <div class="ui label popup-label">Immigration</div>
+          <input type="text" id="immigration" class="r-input">
+        </div>
+        <br/>
+        <div class="ui labeled input popup-input">
+          <div class="ui label popup-label">Emigration</div>
+          <input type="text" id="emigration" class="r-input">
+        </div>
+        <button class="ui button" id="clear-r">Clear</button>
+      </div>
+      <!-- End of popup form -->
+
+      <!-- Popup form for setting min and max values -->
+      <div id="bounds" class="ui popup settings">
+        <table class="ui table">
+          <thead>
+            <tr class="center aligned">
+              <th>Parameter</th>
+              <th>Min</th>
+              <th>Max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pop. (<em>N<sub>0</sub></em>)</td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='n-min'>
+                </div>
+              </td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='n-max'>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Rate (<em>r</em>)</td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='r-min'>
+                </div>
+              </td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='r-max'>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Cap. (<em>k</em>)</td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='k-min'>
+                </div>
+              </td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='k-max'>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Time (<em>t</em>)</td>
+              <td>
+                <div class="ui disabled input">
+                  <input type="text" id='t-min'>
+                </div>
+              </td>
+              <td>
+                <div class="ui input">
+                  <input type="text" id='t-max'>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- End of popup form -->
+
+    </div>
+
+  </body>
+</html>
